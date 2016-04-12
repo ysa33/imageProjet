@@ -225,7 +225,7 @@ displayFunc (void)
    /*  Transformation de point de vue */
    glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */ 
    glLoadIdentity (); /*initialise la matrice a l'identite*/ 
-   gluLookAt (0.0, 1.0, -5.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
+   gluLookAt (1.0, 3.0, -5.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
 
    glUseProgram(shaderProg); 
 
@@ -254,15 +254,17 @@ displayFunc (void)
    glBindBuffer(GL_ARRAY_BUFFER, rectangle);
    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,0,0);
 
-   int r = 0; int g = 0; int b = 200;
+   int r = 0; int g = 0; int b = 1;
 
    for(int i = 0; i <= 20; i+=4){
-     glColor3i(r, g, b);
+     glColor3d(r, g, b);
      glDrawArrays(GL_QUADS, i, 4);
+     g+= 3;
    }
-   r+= 100; g = 0; b = 0;
+   r= 1; g = 0; b = 0;
    for(int i = 24; i <= 44; i+=4){
-     glColor3i(r, g, b);
+     
+     glColor3d(r, g, b);
      glDrawArrays(GL_QUADS, i, 4);
    }
 
