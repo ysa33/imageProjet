@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -13,6 +12,9 @@
 GLuint shaderProg;
 GLuint positionBufferObject;
 GLuint rectangle;
+float rot;
+float trans = 0.1f;
+int sens = 0;
 
 
 char* readFile(const char* fname) {
@@ -223,27 +225,48 @@ displayFunc (void)
    /*  Transformation de point de vue */
    glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */ 
    glLoadIdentity (); /*initialise la matrice a l'identite*/ 
-   gluLookAt (0.0, 1.5, -3.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
+   gluLookAt (0.0, 1.0, -5.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
 
    glUseProgram(shaderProg); 
 
-   /* GLint translation = glGetUniformLocation(shaderProg, "translate"); */
-   /* if (translation == -1) { */
-   /*   fprintf(stderr, "Could not bind attribute %s\n","translate"); */
-   /* } */
-   /* glUniform1f(translation, -0.3f); */
+   GLint translation = glGetUniformLocation(shaderProg, "translate");
+   if (translation == -1) {
+     fprintf(stderr, "Could not bind attribute %s\n","translate");
+   }
 
-
+   printf("\n je monte/descend de : %f\n", trans);
+   if(trans >= 3.0)
+     sens = 1;
+   else if( trans <= 0.0)
+     sens = 0;
+   
+   if(sens == 1){
+     trans -= 0.001;
+   }
+   else if(sens == 0)
+     trans += 0.001;
+   
+   glUniform1f(translation, trans);
+  
     
    glBindVertexArray(positionBufferObject);
    glEnableVertexAttribArray(0);
    glBindBuffer(GL_ARRAY_BUFFER, rectangle);
    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,0,0);
 
-   for(int i = 0; i <= 44; i+=4)
-       glDrawArrays(GL_QUADS, i, 4);
+   int r = 0; int g = 0; int b = 200;
 
+   for(int i = 0; i <= 20; i+=4){
+     glColor3i(r, g, b);
+     glDrawArrays(GL_QUADS, i, 4);
+   }
+   r+= 100; g = 0; b = 0;
+   for(int i = 24; i <= 44; i+=4){
+     glColor3i(r, g, b);
+     glDrawArrays(GL_QUADS, i, 4);
+   }
 
+   
    glUseProgram(0);
 
 
