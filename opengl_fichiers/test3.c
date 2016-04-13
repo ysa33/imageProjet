@@ -15,9 +15,11 @@ GLuint positionBufferObject;
 GLuint coordBuffer, colorBuffer;
 GLint  attributeColor;
 
+
 float angle = 0;
 float trans = 0;
-
+float transx = 0; float transy = 0; float transz = 0;
+ 
 char* readFile(const char* fname) {
   FILE *f;
   char *content = NULL;
@@ -107,9 +109,27 @@ keyboardFunc (unsigned char key, int x, int y)
 {
     switch (key)
     {
-        case 'q':
-        case 'Q':
-        case 27:                       // Esc
+
+    case 'o':
+    case 'O':
+      transy += 0.1;
+      break;
+    case 'k':
+    case 'K':
+      transx -= 0.1;
+      break;
+    case 'l':
+    case 'L':
+      transy -= 0.1;
+      break;
+    case 'm':
+    case 'M':
+      transx += 0.1;
+      break;
+      
+    case 'q':
+    case 'Q':
+    case 27:                       // Esc
             exit (EXIT_SUCCESS);
             break;
             
@@ -158,30 +178,30 @@ static const GLfloat rectColor[] = {
     0.583f,  0.771f,  0.014f,
     0.583f,  0.771f,  0.014f,
 
-    0.609f,  0.115f,  0.436f, // face inf�rieure
-    0.609f,  0.115f,  0.436f,
-    0.609f,  0.115f,  0.436f,
-    0.609f,  0.115f,  0.436f,
+    0.609f,  0.815f,  0.436f, // face inf�rieure
+    0.609f,  0.815f,  0.436f,
+    0.609f,  0.815f,  0.436f,
+    0.609f,  0.815f,  0.436f,
     
     0.327f,  0.483f,  0.844f, // face derri�re
     0.327f,  0.483f,  0.844f, 
     0.327f,  0.483f,  0.844f, 
     0.327f,  0.483f,  0.844f, 
     
-    0.822f,  0.569f,  0.201f, // face devant
-    0.822f,  0.569f,  0.201f,
-    0.822f,  0.569f,  0.201f,
-    0.822f,  0.569f,  0.201f,
+    0.822f,  0.069f,  0.201f, // face devant
+    0.822f,  0.069f,  0.201f,
+    0.822f,  0.069f,  0.201f,
+    0.822f,  0.069f,  0.201f,
     
-    0.135f,  0.602f,  0.223f, // face gauche
-    0.135f,  0.602f,  0.223f, 
-    0.135f,  0.602f,  0.223f, 
-    0.135f,  0.602f,  0.223f, 
+    0.135f,  0.602f,  0.523f, // face gauche
+    0.135f,  0.602f,  0.523f, 
+    0.135f,  0.602f,  0.523f, 
+    0.135f,  0.602f,  0.523f, 
     
-    0.714f,  0.505f,  0.345f, // face droite
-    0.714f,  0.505f,  0.345f,
-    0.714f,  0.505f,  0.345f,
-    0.714f,  0.505f,  0.345f
+    0.714f,  0.205f,  0.900f, // face droite
+    0.714f,  0.205f,  0.900f,
+    0.714f,  0.205f,  0.900f,
+    0.714f,  0.205f,  0.900f
 };
 
 
@@ -216,44 +236,33 @@ displayFunc (void)
     /* Transformation de projection */
     glMatrixMode (GL_PROJECTION);/* projection 3D-->2D */
     glLoadIdentity ();/*initialise la matrice a l'identite*/
-    gluPerspective(45,(double) 640/480, 0.1, 100.0);
-    
+        
     /* specification de la projection*/ 
     //glOrtho(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection parallele*/
-    //glFrustum(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection perspective*/ 
+    glFrustum(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection perspective*/ 
 
     /*  Transformation de point de vue */
     glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */ 
     glLoadIdentity(); /*initialise la matrice a l'identite*/ 
-    gluLookAt(1.0, 0.0, 3.0, 0.0 ,0.0, 0.0, 0.0, 1.0, 0.0);   /*Visualisation de la sc�ne */ 
+    gluLookAt(0.0, 0.0, 3.0, 0.0 ,0.0, 0.0, 0.0, 1.0, 0.0);   /*Visualisation de la sc�ne */ 
   
   glPushMatrix();
 
+  glTranslatef(-0.7f + transx,transy, transz);
+
   GLfloat Light0[] = {0.3f, 0.3f, 0.3f, 1.0f};
   GLfloat lightPos[] = {0.0f, 0.0f, 2.0f, 1.0f};
-  GLfloat Light[] = {1.0f, 1.0f, 1.0f, 1.0f};
- 
-   
+  GLfloat Light[] = {1.0f, 1.0f, 1.0f, 1.0f}; 
 
   glLightfv(GL_LIGHT0, GL_AMBIENT, Light0 );
-  glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
-  glLightfv(GL_LIGHT0,GL_SPECULAR,Light);
-  glLightfv(GL_LIGHT0,GL_DIFFUSE,Light);
-
-  GLfloat Ambient[]={0.4,0.4,0.4,1.0};  	          
-  GLfloat Diffus[]={0.1,0.5,0.3,1.0};  	          
-  GLfloat Specular[]={1.0,0.0,0.0,1.0};  	             
-  glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,Ambient);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,Diffus);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,Specular);
-  glMateriali(GL_FRONT,GL_SHININESS,10.0);
- 
-  glTranslatef(-0.7f, 0.0f, 0.0f);
+  glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, Light);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, Light);
 
   /* operations avec le shader */
   glUseProgram(shaderProg);
+
   GLint rotation = glGetUniformLocation(shaderProg, "rotangle");
-  GLint translation = glGetUniformLocation(shaderProg, "translate");
   GLint ordre = glGetUniformLocation(shaderProg, "ordre");
   if (rotation == -1) {
     fprintf(stderr, "Could not bind attribute %s\n","rotate");
@@ -261,16 +270,27 @@ displayFunc (void)
   if (ordre == -1) {
     fprintf(stderr, "Could not bind attribute %s\n","ordre");
   }
-  if(translation == -1) {
-    fprintf(stderr, "Could not bind attribute %s\n", "translate");
-  }
 
-  glUniform1i(translation, trans);
   glUniform1i(rotation, angle);
   glUniform1i(ordre, 1); // quoi faire d'abord ? 1=rotation, autre=rotation
-  trans += 0.1;
-  angle += 0.1; // mise � jour de la variable globale
-    
+  angle += 0.2; // mise � jour de la variable globale
+
+  /*GLfloat Ambient[]={0.4,0.4,0.4,1.0};  	          
+  GLfloat Diffus[]={0.1,0.5,0.3,1.0};  	          
+  GLfloat Specular[]={1.0,0.0,0.0,1.0};  	             
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, Diffus);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, Specular);
+  glMateriali(GL_FRONT, GL_SHININESS, 10.0);*/
+ 
+  GLfloat Ambient[]={1.0,0.0,0.0,1.0};  	          
+  GLfloat Diffus[]={0.0,0.5,0.0,1.0};  	          
+  GLfloat Specular[]={0,0.0,1.0,1.0};  	             
+  glMaterialfv(GL_FRONT,GL_AMBIENT,Ambient);
+  glMaterialfv(GL_FRONT,GL_DIFFUSE,Diffus);
+  glMaterialfv(GL_FRONT,GL_SPECULAR,Specular);
+  glMateriali(GL_FRONT,GL_SHININESS,10.0); 
+
   glBindVertexArray(positionBufferObject);
 
   // 1er buffer d'attributes (positions)
@@ -289,7 +309,7 @@ displayFunc (void)
 
   glPushMatrix();
 
-  glTranslatef(0.7f, 0.0f, 0.0f);
+  glTranslatef(0.7f + transx, transy, transz);
 
   glDrawArrays(GL_QUADS, 0, 4*6);
 

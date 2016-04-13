@@ -5,12 +5,12 @@ uniform int ordre;
 
 attribute vec3 v_color;
 varying vec3 f_color;
+varying vec3 v, N;
 
 #define M_PI 3.14159265358979323846
 
 void main (void)
 {   
-
 	float rotate = float(rotangle)*M_PI/180.0;
 
      	mat3 rot_x = mat3(
@@ -43,5 +43,9 @@ void main (void)
 	gl_Position = gl_ModelViewProjectionMatrix * q;
 
 	f_color = v_color;
+
+	gl_FrontColor = gl_Color; 	       
+	v = vec3(gl_ModelViewMatrix * gl_Vertex); // transformation dans le repère de la caméra
+	N = normalize(gl_NormalMatrix * gl_Normal);	
 
 }
