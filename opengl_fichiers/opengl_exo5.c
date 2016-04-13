@@ -12,7 +12,7 @@
 GLuint shaderProg;
 GLuint positionBufferObject;
 GLuint rectangle;
-float rot;
+float rot = 45;
 float trans = 0.1f;
 int sens = 0;
 
@@ -202,7 +202,6 @@ const float rectColor[6] = {
 void InitializeVertexBuffer()
 {
     glBindVertexArray(positionBufferObject);
-
     glGenBuffers(1, &rectangle); 
     glBindBuffer(GL_ARRAY_BUFFER, rectangle);
     glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertex), rectVertex, GL_STATIC_DRAW);
@@ -225,50 +224,72 @@ displayFunc (void)
    /*  Transformation de point de vue */
    glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */ 
    glLoadIdentity (); /*initialise la matrice a l'identite*/ 
-   gluLookAt (1.0, 3.0, -5.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
+   gluLookAt (1.0, 1.0, -5.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
 
    glUseProgram(shaderProg); 
 
-   GLint translation = glGetUniformLocation(shaderProg, "translate");
-   if (translation == -1) {
-     fprintf(stderr, "Could not bind attribute %s\n","translate");
-   }
+   /* GLint translation = glGetUniformLocation(shaderProg, "translate"); */
+   /* if (translation == -1) { */
+   /*   fprintf(stderr, "Could not bind attribute %s\n","translate"); */
+   /* } */
 
-   printf("\n je monte/descend de : %f\n", trans);
-   if(trans >= 3.0)
-     sens = 1;
-   else if( trans <= 0.0)
-     sens = 0;
+   /* printf("\n je monte/descend de : %f\n", trans); */
+   /* if(trans >= 3.0) */
+   /*   sens = 1; */
+   /* else if( trans <= 0.0) */
+   /*   sens = 0; */
    
-   if(sens == 1){
-     trans -= 0.001;
-   }
-   else if(sens == 0)
-     trans += 0.001;
+   /* if(sens == 1){ */
+   /*   trans -= 0.001; */
+   /* } */
+   /* else if(sens == 0) */
+   /*   trans += 0.001; */
    
-   glUniform1f(translation, trans);
+   // glUniform1f(translation, trans);
   
-    
+   /* GLint rotation = glGetUniformLocation(shaderProg, "rotate"); */
+   /* if (rotation == -1) { */
+   /*   fprintf(stderr, "Could not bind attribute %s\n","rotate"); */
+   /* } */
+   /* rot += 0.001; */
+   /* glUniform1f(rotation, rot); */
+  
    glBindVertexArray(positionBufferObject);
    glEnableVertexAttribArray(0);
+
+   glTranslatef(-3.0f, 0.0f, 0.0f);
+   glRotatef(rot,0.0f,1.0f,0.0f);	// Rotate The cube around the Y axis
+
+   //glRotatef(rot,1.0f,1.0f,1.0f);
    glBindBuffer(GL_ARRAY_BUFFER, rectangle);
    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,0,0);
 
    int r = 0; int g = 0; int b = 1;
 
-   for(int i = 0; i <= 20; i+=4){
-     glColor3d(r, g, b);
-     glDrawArrays(GL_QUADS, i, 4);
-     g+= 3;
-   }
-   r= 1; g = 0; b = 0;
-   for(int i = 24; i <= 44; i+=4){
-     
-     glColor3d(r, g, b);
-     glDrawArrays(GL_QUADS, i, 4);
-   }
-
+   glDrawArrays(GL_QUADS, 0, 4*6);
    
+   glLoadIdentity();
+
+   glTranslatef(3.0f,0.0f, 0.0f);
+   glRotatef(rot,0.0f,1.0f,0.0f);	// Rotate The cube around the Y axis
+   
+   glDrawArrays(GL_QUADS, 6, 4*6);
+
+   glLoadIdentity();
+   /* for(int i = 0; i <= 20; i+=4){ */
+   /*   glColor3d(r, g, b); */
+   /*   glDrawArrays(GL_QUADS, i, 4); */
+   /*   g+= 3; */
+   /* } */
+
+   /* r= 1; g = 0; b = 0; */
+   /* for(int i = 24; i <= 44; i+=4){ */
+     
+   /*   glColor3d(r, g, b); */
+   /*   glDrawArrays(GL_QUADS, i, 4); */
+   /* } */
+
+   rot += 0.1;
    glUseProgram(0);
 
 
@@ -285,6 +306,8 @@ main (int argc, char **argv)
     glutInit (&argc, argv);
     glutInitWindowPosition (0, 0);/* position initiale */
     glutInitWindowSize (640, 480);/* taille initiale fenetre graphique */
+    gluPerspective(45,(double) 640/480, 0.1, 100.0);
+	
     
     glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);/* affichage couleur */
     /* Definit le type de fenetre d'affichage par composition des constantes suivantes:
