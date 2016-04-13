@@ -15,7 +15,7 @@ GLuint positionBufferObject;
 GLuint coordBuffer, colorBuffer;
 GLint  attributeColor;
 
-
+int bleu = -1;
 float angle = 0;
 float trans = 0;
 float transx = 0; float transy = 0; float transz = 0;
@@ -126,6 +126,15 @@ keyboardFunc (unsigned char key, int x, int y)
     case 'M':
       transx += 0.1;
       break;
+    case 'i':
+    case 'I':
+      transz += 0.1;
+      break;
+    case 'p':
+    case 'P':
+      transz -= 0.1;
+      break;
+      
       
     case 'q':
     case 'Q':
@@ -231,30 +240,38 @@ displayFunc (void)
 
   /* activation du z-buffer */
   glEnable(GL_DEPTH_TEST);
-  // glDepthFunc(GL_LESS);
+  glDepthFunc(GL_LESS);
 
-    /* Transformation de projection */
-    glMatrixMode (GL_PROJECTION);/* projection 3D-->2D */
-    glLoadIdentity ();/*initialise la matrice a l'identite*/
-        
-    /* specification de la projection*/ 
-    //glOrtho(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection parallele*/
-    glFrustum(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection perspective*/ 
-
-    /*  Transformation de point de vue */
-    glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */ 
-    glLoadIdentity(); /*initialise la matrice a l'identite*/ 
-    gluLookAt(0.0, 0.0, 3.0, 0.0 ,0.0, 0.0, 0.0, 1.0, 0.0);   /*Visualisation de la sc�ne */ 
+  /* Activation de la lumiere */
+  glEnable(GL_LIGHTING);
+  
+  /* Transformation de projection */
+  glMatrixMode (GL_PROJECTION);/* projection 3D-->2D */
+  glLoadIdentity ();/*initialise la matrice a l'identite*/
+  
+  /* Specification de la projection*/ 
+  glFrustum(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection perspective*/ 
+  
+  /*  Transformation de point de vue */
+  glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */ 
+  glLoadIdentity(); /*initialise la matrice a l'identite*/ 
+  gluLookAt(0.0, 0.0, 3.0, 0.0 ,0.0, 0.0, 0.0, 1.0, 0.0);   /*Visualisation de la sc�ne */ 
   
   glPushMatrix();
+  
+  glTranslatef(-0.9f + transx,transy, transz);
 
-  glTranslatef(-0.7f + transx,transy, transz);
-
-  GLfloat Light0[] = {0.3f, 0.3f, 0.3f, 1.0f};
-  GLfloat lightPos[] = {0.0f, 0.0f, 2.0f, 1.0f};
+  GLfloat Light0[] = {0.01f, 0.01f, 0.01f, 1.0f};
+  GLfloat lightPos[] = {0.0f, 0.0f, 3.0f, 1.0f};
   GLfloat Light[] = {1.0f, 1.0f, 1.0f, 1.0f}; 
 
-  glLightfv(GL_LIGHT0, GL_AMBIENT, Light0 );
+  if(bleu){
+    GLfloat blue[4] = { 0.0, 0.0, 1.0, 1.0 };
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, blue);
+  }
+  else
+    glLightfv(GL_LIGHT0, GL_AMBIENT, Light0 );
+  
   glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
   glLightfv(GL_LIGHT0, GL_SPECULAR, Light);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, Light);
@@ -275,21 +292,24 @@ displayFunc (void)
   glUniform1i(ordre, 1); // quoi faire d'abord ? 1=rotation, autre=rotation
   angle += 0.2; // mise � jour de la variable globale
 
-  /*GLfloat Ambient[]={0.4,0.4,0.4,1.0};  	          
-  GLfloat Diffus[]={0.1,0.5,0.3,1.0};  	          
+  GLfloat Ambient[]={0.4,0.6,0.4,1.0};  	          
+  GLfloat Diffus[]={0.2,0.3,0.2,1.0};  	          
   GLfloat Specular[]={1.0,0.0,0.0,1.0};  	             
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
   glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, Diffus);
   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, Specular);
-  glMateriali(GL_FRONT, GL_SHININESS, 10.0);*/
+  glMateriali(GL_FRONT, GL_SHININESS, 10.0);
  
-  GLfloat Ambient[]={1.0,0.0,0.0,1.0};  	          
-  GLfloat Diffus[]={0.0,0.5,0.0,1.0};  	          
-  GLfloat Specular[]={0,0.0,1.0,1.0};  	             
+  /*  GLfloat Ambient[] = {0.2, 0.2, 0.22, 1.0};  	          
+  GLfloat Diffus[] = {0.1, 0.5, 0.8, 1.0};  	          
+  GLfloat Specular[] = {1.0, 1.0, 1.0, 1.0};  
+  GLfloat no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
+  GLfloat low_shininess[] = { 5.0f };
   glMaterialfv(GL_FRONT,GL_AMBIENT,Ambient);
   glMaterialfv(GL_FRONT,GL_DIFFUSE,Diffus);
   glMaterialfv(GL_FRONT,GL_SPECULAR,Specular);
-  glMateriali(GL_FRONT,GL_SHININESS,10.0); 
+  glMaterialfv(GL_FRONT,GL_SHININESS,low_shininess);
+  glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);*/
 
   glBindVertexArray(positionBufferObject);
 
@@ -306,10 +326,9 @@ displayFunc (void)
   glDrawArrays(GL_QUADS, 0, 4*6);
 
   glPopMatrix();
-
   glPushMatrix();
 
-  glTranslatef(0.7f + transx, transy, transz);
+  glTranslatef(0.9f + transx, transy, transz);
 
   glDrawArrays(GL_QUADS, 0, 4*6);
 
@@ -325,41 +344,50 @@ displayFunc (void)
 int
 main (int argc, char **argv)
 {
-    glutInit (&argc, argv);
-    glutInitWindowPosition (0, 0);/* position initiale */
-    glutInitWindowSize (640, 480);/* taille initiale fenetre graphique */
+  if(argc > 2)
+      fprintf(stderr, "Le programme se lance sans arguments ou avec un seul : 'b'");
 
-    glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);/* affichage couleur */
-    /* Definit le type de fenetre d'affichage par composition des constantes suivantes:
+  if(argc == 2){
+    if(argv[1][0] == 'b'){
+      printf("On passe au bleu");
+      bleu = 1;
+    }
+  }
+  
+  glutInit (&argc, argv);
+  glutInitWindowPosition (0, 0);/* position initiale */
+  glutInitWindowSize (640, 480);/* taille initiale fenetre graphique */
+  
+  glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);/* affichage couleur */
+  /* Definit le type de fenetre d'affichage par composition des constantes suivantes:
      - GLUT_RGBA ou GLUT_INDEX (vraies couleurs ou couleurs indexées),
      - GLUT_SINGLE ou GLUT_DOUBLE (simple ou double buffer),
      - GLUT_DEPTH, GLUT_STENCIL (utilisation de tampons profondeur, stencil).*/
-    
-    if (glutCreateWindow ("Initiation a OpenGL") <= 0)/* creation de la fenetre graphique */
+  
+  if (glutCreateWindow ("Initiation a OpenGL") <= 0)/* creation de la fenetre graphique */
     {
-        fprintf (stderr, "Impossible de creer la fenetre Glut.\n");
-        exit(EXIT_FAILURE);
+      fprintf (stderr, "Impossible de creer la fenetre Glut.\n");
+      exit(EXIT_FAILURE);
     }
-    
-    // Setup GLEW
-    GLenum err = glewInit();
-    if(GLEW_OK != err)
-      {
-	/* Problem: glewInit failed, something is seriously wrong. */
-	fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+  
+  // Setup GLEW
+  GLenum err = glewInit();
+  if(GLEW_OK != err)
+    {
+      /* Problem: glewInit failed, something is seriously wrong. */
+      fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     }
-    glClearColor (0.5, 0.5, 0.5, 1.0); /* definition de la couleur d'effacement (GL_COLOR_BUFFER_BIT) */
-    
-    
-    shaderProg = setShaders();
-    InitializeVertexBuffer(); 
-    
-    glutDisplayFunc (&displayFunc);/* fonction d'affichage */
-    glutIdleFunc(&displayFunc);
-    glutKeyboardFunc (&keyboardFunc); /* gestion du clavier */
-    
-    
-    glutMainLoop ();/* lancement de la boucle principale */
-    
-    return EXIT_SUCCESS;
+  glClearColor (0.5, 0.5, 0.5, 1.0); /* definition de la couleur d'effacement (GL_COLOR_BUFFER_BIT) */
+  
+  
+  shaderProg = setShaders();
+  InitializeVertexBuffer(); 
+  
+  glutDisplayFunc (&displayFunc);/* fonction d'affichage */
+  glutIdleFunc(&displayFunc);
+  glutKeyboardFunc (&keyboardFunc); /* gestion du clavier */
+  
+  glutMainLoop ();/* lancement de la boucle principale */
+  
+  return EXIT_SUCCESS;
 }
