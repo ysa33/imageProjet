@@ -8,5 +8,9 @@ all: $(TARGETS)
 $(TARGETS):
 	$(CC) $(CFLAGS) $@.c  $(LDFLAGS)  -o $@
 
+test2:
+	$(CC) $(CFLAGS) $@.c  $(LDFLAGS)  -o $@
+
+
 clean:
 	rm -f $(TARGETS)

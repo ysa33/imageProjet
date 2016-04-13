@@ -1,14 +1,7 @@
-/*
- * Time-stamp: <Wed Apr 13 13:47:53 2016 (ysaemery)>
- * Created: Tue Apr 12 11:35:16 2016
- */
 
-#include <assert.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <math.h>
 
 /* fichiers d'entetes OpenGL, GLU, GLUT et GLEW */
 #include <GL/glew.h> //OpenGL extension wrangler library
@@ -18,9 +11,6 @@
 
 
 GLuint shaderProg;
-
-GLuint positionBufferObject;
-GLuint cube;
 
 
 char* readFile(const char* fname) {
@@ -73,6 +63,7 @@ GLuint setShaders() {
     GLchar* vertexSource = (GLchar*)readFile("illumination.vert");
     GLchar* fragmentSource = (GLchar*)readFile("illumination.frag");
 
+
     // 2 - associate shader and source
     glShaderSource( vshader, 1, (const GLchar**)(&vertexSource), NULL );
     glShaderSource( fshader, 1, (const GLchar**)(&fragmentSource), NULL );
@@ -122,58 +113,17 @@ keyboardFunc (unsigned char key, int x, int y)
     glutPostRedisplay ();
 }
 
-const float cube1Vertex[] = {
-    /* face 1 */
-    -1.0f, -1.0f, 1.0f,
-    -1.0f, -1.0f, -1.0f,
-    1.0f, -1.0f, -1.0f,
-    1.0f, -1.0f, 1.0f,
-    /* face 2 */
-    1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, -1.0f,
-    -1.0f, 1.0f, -1.0f,
-    -1.0f, 1.0f, 1.0f,
-    /* face 3 */
-    1.0f, -1.0f, 1.0f,
-    1.0f, -1.0f, -1.0f,
-    1.0f, 1.0f, -1.0f,
-    1.0f, 1.0f, 1.0f,
-    /* face 4 */
-    -1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,-1.0f, 1.0f,
-    /* face 5 */
-    1.0f, 1.0f, -1.0f,
-    1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, 1.0f, -1.0f,
-    /* face 6 */
-    1.0f, -1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f, -1.0f, 1.0f
-};
 
-void InitializeVertexBuffer()
-{
-    glBindVertexArray(positionBufferObject);
 
-    glGenBuffers(1, &cube);
-    glBindBuffer(GL_ARRAY_BUFFER, cube);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cube1Vertex), cube1Vertex, GL_STATIC_DRAW);
-
-}
 void
 displayFunc (void)
 {
-    glEnable(GL_DEPTH_TEST);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* Transformation de projection */
-    glMatrixMode(GL_PROJECTION);/* projection 3D-->2D */
+    glMatrixMode (GL_PROJECTION);/* projection 3D-->2D */
     glLoadIdentity ();/*initialise la matrice a l'identite*/
-    //gluPerspective(45.0, (float) 640/480, 1.0, 10.0);
+
     /* specification de la projection*/
     //   glOrtho(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection parallele*/
     glFrustum(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection perspective*/
@@ -181,67 +131,40 @@ displayFunc (void)
     /*  Transformation de point de vue */
     glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */
     glLoadIdentity (); /*initialise la matrice a l'identite*/
-    gluLookAt (4.0, 6.0, 3.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
+    gluLookAt (0.0, 3.0, 3.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
 
-    glColor3i(50,0,100);
 
-    glBegin(GL_QUADS);
-    glVertex3i(1,1,1);
-    glVertex3i(1,-1,1);
-    glVertex3i(-1,-1,1);
-    glVertex3i(-1,1,1);
-    glVertex3i(1,1,-1);
-    glVertex3i(1,-1,-1);
-    glVertex3i(-1,-1,-1);
-    glVertex3i(-1,1,-1);
-    glVertex3i(1,1,1);
-    glVertex3i(1,-1,1);
-    glVertex3i(1,-1,-1);
-    glVertex3i(1,1,-1);
-    glVertex3i(-1,1,1);
-    glVertex3i(-1,-1,1);
-    glVertex3i(-1,-1,-1);
-    glVertex3i(-1,1,-1);
-    glVertex3i(-1,1,-1);
-    glVertex3i(-1,1,1);
-    glVertex3i(1,1,1);
-    glVertex3i(1,1,-1);
-    glVertex3i(-1,-1,-1);
-    glVertex3i(-1,-1,1);
-    glVertex3i(1,-1,1);
-    glVertex3i(1,-1,-1);
-    glEnd();
+    GLfloat Light0[] = {0.3f, 0.3f, 0.3f, 1.0f};
+    GLfloat lightPos[] = {0.0f, 0.0f, 2.0f, 1.0f};
+    GLfloat Light[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    glColor3i(0,0,100);
 
-    glBegin(GL_QUADS);
-    glVertex3f(1.5,1.5,1.5);
-    glVertex3f(1.5,-1.5,1.5);
-    glVertex3f(-1.5,-1.5,1.5);
-    glVertex3f(-1.5,1.5,1.5);
-    glVertex3f(1.5,1.5,-1.5);
-    glVertex3f(1.5,-1.5,-1.5);
-    glVertex3f(-1.5,-1.5,-1.5);
-    glVertex3f(-1.5,1.5,-1.5);
-    glVertex3f(1.5,1.5,1.5);
-    glVertex3f(1.5,-1.5,1.5);
-    glVertex3f(1.5,-1.5,-1.5);
-    glVertex3f(1.5,1.5,-1.5);
-    glVertex3f(-1.5,1.5,1.5);
-    glVertex3f(-1.5,-1.5,1.5);
-    glVertex3f(-1.5,-1.5,-1.5);
-    glVertex3f(-1.5,1.5,-1.5);
-    glVertex3f(-1.5,1.5,-1.5);
-    glVertex3f(-1.5,1.5,1.5);
-    glVertex3f(1.5,1.5,1.5);
-    glVertex3f(1.5,1.5,-1.5);
-    glVertex3f(-1.5,-1.5,-1.5);
-    glVertex3f(-1.5,-1.5,1.5);
-    glVertex3f(1.5,-1.5,1.5);
-    glVertex3f(1.5,-1.5,-1.5);
-    glEnd();
 
-    glFlush();
+    glLightfv(GL_LIGHT0, GL_AMBIENT, Light0 );
+    glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
+    glLightfv(GL_LIGHT0,GL_SPECULAR,Light);
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,Light);
+
+
+    // 4 - Load and use the program
+    glUseProgram(shaderProg);
+
+
+
+    GLfloat Ambient[]={1.0,0.0,0.0,1.0};
+    GLfloat Diffus[]={0.0,0.5,0.0,1.0};
+    GLfloat Specular[]={0,0.0,1.0,1.0};
+    glMaterialfv(GL_FRONT,GL_AMBIENT,Ambient);
+    glMaterialfv(GL_FRONT,GL_DIFFUSE,Diffus);
+    glMaterialfv(GL_FRONT,GL_SPECULAR,Specular);
+    glMateriali(GL_FRONT,GL_SHININESS,10.0);
+    //glutSolidTeapot(10);
+    glutSolidCube(1);
+
+
+    glutSolidCube(2);
+
+
     glutSwapBuffers ();
 }
 
@@ -250,7 +173,7 @@ int
 main (int argc, char **argv)
 {
     glutInit (&argc, argv);
-    glutInitWindowPosition (50, 50);
+    glutInitWindowPosition (0, 0);
     glutInitWindowSize (640, 480);
 
     glutInitDisplayMode (GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);/* affichage couleur */

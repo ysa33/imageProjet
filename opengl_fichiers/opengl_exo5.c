@@ -115,58 +115,141 @@ keyboardFunc (unsigned char key, int x, int y)
 }
 
 const float rectVertex[] = {
-  -0.3f,-0.3f,0.0f,1.0f,
-  0.3f,-0.3f,0.0f,1.0f,
-  0.3f,0.3f,0.0f,1.0f,
-  -0.3f,0.3f,0.0f,1.0f
+    /*Cube 1 */
+    /*Face 1*/
+    -4.f, -1.f, 0.0f, 1.0f, //F
+    -4.f, 1.f, 0.0f, 1.0f,  //A
+    -2.f, 1.f, 0.0f, 1.0f,  // D
+    -2.f, -1.f, 0.0f, 1.0f, // G
+
+    /*Face 2*/
+    -4.f, -1.f, 2.0f, 1.0f, //E
+    -4.f, 1.f, 2.0f, 1.0f, //B
+    -2.f, 1.f, 2.0f, 1.0f, //C
+    -2.f, -1.f, 2.0f, 1.0f, //H
+
+    /*Face 3*/
+    -4.f, 1.f, 0.0f, 1.0f,  //A
+    -4.f, 1.f, 2.0f, 1.0f, //B
+    -2.f, 1.f, 2.0f, 1.0f, //C
+    -2.f, 1.f, 0.0f, 1.0f,  // D
+
+    /*Face 4*/
+    -4.f, -1.f, 0.0f, 1.0f, //F
+    -4.f, -1.f, 2.0f, 1.0f, //E
+    -2.f, -1.f, 2.0f, 1.0f, //H
+    -2.f, -1.f, 0.0f, 1.0f, // G
+
+    /*Face 5*/
+    -4.f, 1.f, 0.0f, 1.0f,  //A
+    -4.f, 1.f, 2.0f, 1.0f, //B
+    -4.f, -1.f, 2.0f, 1.0f, //E
+    -4.f, -1.f, 0.0f, 1.0f, //F
+
+    /*Face 6*/
+    -2.f, 1.f, 0.0f, 1.0f,  // D
+    -2.f, 1.f, 2.0f, 1.0f, //C
+    -2.f, -1.f, 2.0f, 1.0f, //H
+    -2.f, -1.f, 0.0f, 1.0f, // G
+
+    /* Cube 2*/
+
+    /*Face 1*/
+    4.f, -1.f, 0.0f, 1.0f, //F
+    4.f, 1.f, 0.0f, 1.0f,  //A
+    2.f, 1.f, 0.0f, 1.0f,  // D
+    2.f, -1.f, 0.0f, 1.0f, // G
+
+    /*Face 2*/
+    4.f, -1.f, 2.0f, 1.0f, //E
+    4.f, 1.f, 2.0f, 1.0f, //B
+    2.f, 1.f, 2.0f, 1.0f, //C
+    2.f, -1.f, 2.0f, 1.0f, //H
+
+    /*Face 3*/
+    4.f, 1.f, 0.0f, 1.0f,  //A
+    4.f, 1.f, 2.0f, 1.0f, //B
+    2.f, 1.f, 2.0f, 1.0f, //C
+    2.f, 1.f, 0.0f, 1.0f,  // D
+
+    /*Face 4*/
+    4.f, -1.f, 0.0f, 1.0f, //F
+    4.f, -1.f, 2.0f, 1.0f, //E
+    2.f, -1.f, 2.0f, 1.0f, //H
+    2.f, -1.f, 0.0f, 1.0f, // G
+
+    /*Face 5*/
+    4.f, 1.f, 0.0f, 1.0f,  //A
+    4.f, 1.f, 2.0f, 1.0f, //B
+    4.f, -1.f, 2.0f, 1.0f, //E
+    4.f, -1.f, 0.0f, 1.0f, //F
+
+    /*Face 6*/
+    2.f, 1.f, 0.0f, 1.0f,  // D
+    2.f, 1.f, 2.0f, 1.0f, //C
+    2.f, -1.f, 2.0f, 1.0f, //H
+    2.f, -1.f, 0.0f, 1.0f // G
+
+};
+
+const float rectColor[6] = {
+    0.0f, 0.6f, 0.0f,
+    0.3f, 0.0f, 0.2f,
 };
 
 void InitializeVertexBuffer()
 {
-  glBindVertexArray(positionBufferObject);
+    glBindVertexArray(positionBufferObject);
 
-  glGenBuffers(1, &rectangle); 
-  glBindBuffer(GL_ARRAY_BUFFER, rectangle);    
-  glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertex), rectVertex, GL_STATIC_DRAW);
-
+    glGenBuffers(1, &rectangle); 
+    glBindBuffer(GL_ARRAY_BUFFER, rectangle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectVertex), rectVertex, GL_STATIC_DRAW);
+    glColorPointer(3, GL_FLOAT, 0, &rectColor);
 }
 
 void
 displayFunc (void)
 {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);/* effacement du (z-)buffer ou s'effectuent les dessins */
-    
- /* Transformation de projection */
+
+  /* Transformation de projection */
   glMatrixMode (GL_PROJECTION);/* projection 3D-->2D */
   glLoadIdentity ();/*initialise la matrice a l'identite*/
-  
-  /* specification de la projection*/ 
-  //   glOrtho(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection parallele*/
-   glFrustum(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection perspective*/ 
 
-  /*  Transformation de point de vue */
+  /* specification de la projection*/ 
+  //glOrtho(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection parallele*/
+   glFrustum(-2.0,2.0,-2.0,2.0,1.0,10.0);  /*Projection perspective*/
+
+   /*  Transformation de point de vue */
    glMatrixMode (GL_MODELVIEW);/* pile courante = matrice de point de vue  */ 
    glLoadIdentity (); /*initialise la matrice a l'identite*/ 
-   gluLookAt (0.0, 0.0, 3.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */ 
+   gluLookAt (0.0, 1.5, -3.0, 0.,0, 0, 0.0, 1.0, 0.0);   /*Visualisation de la scène */
 
-  glUseProgram(shaderProg); 
+   glUseProgram(shaderProg); 
 
-  GLint translation = glGetUniformLocation(shaderProg, "translate");
-  if (translation == -1) {
-    fprintf(stderr, "Could not bind attribute %s\n","translate");
-  }
-  glUniform1f(translation, -0.3f);
+   /* GLint translation = glGetUniformLocation(shaderProg, "translate"); */
+   /* if (translation == -1) { */
+   /*   fprintf(stderr, "Could not bind attribute %s\n","translate"); */
+   /* } */
+   /* glUniform1f(translation, -0.3f); */
 
 
     
-  glBindVertexArray(positionBufferObject);
-  glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, rectangle);
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,0,0);
-  glDrawArrays(GL_QUADS, 0, 4);
-  glUseProgram(0); 
+   glBindVertexArray(positionBufferObject);
+   glEnableVertexAttribArray(0);
+   glBindBuffer(GL_ARRAY_BUFFER, rectangle);
+   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,0,0);
 
-  glutSwapBuffers (); //Echanger les buffer. Valable pour GLUT_DOUBLE
+   for(int i = 0; i <= 44; i+=4)
+       glDrawArrays(GL_QUADS, i, 4);
+
+
+   glUseProgram(0);
+
+
+   glDisableClientState(GL_COLOR_ARRAY);
+
+   glutSwapBuffers (); //Echanger les buffer. Valable pour GLUT_DOUBLE
 }
 
 
